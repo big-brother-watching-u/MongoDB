@@ -17,8 +17,6 @@ namespace MongoDB
             var program = new Program();
             program.CreateCollections();
             program.CreateDocument();
-
-
             Console.ReadKey();
         }
         async void CreateCollections()
@@ -81,11 +79,25 @@ namespace MongoDB
             Person person = BsonSerializer.Deserialize<Person>(doc);//Создать документ как объект Person
             Console.WriteLine(person.ToJson());
             */
+            /*
+            PersonAtributes tom = new PersonAtributes { PersonId = 1, Name = "Tom", Language = "Russian", Email = "tom@somemail.com", YearsInTheCompany = 3 };
+            Console.WriteLine(tom.ToBsonDocument()); //Создать документ как объект PersonAtributes
+            */
+            /*
+            BsonClassMap.RegisterClassMap<PersonAtributes>(cm =>
+            {
+                cm.AutoMap();
+                cm.MapMember(p => p.Name).SetElementName("username");
+            });
+            PersonAtributes tom = new PersonAtributes { Name = "Tom", Age = 38 }; //свойство Name будет сопоставляется с полем username.
+            Console.WriteLine(tom.ToBsonDocument());
+            */
         }
     }
-
+    /*
     class Person
     {
+        //класс Person
         public int PersonId { get; set; }
         public string Name { get; set; } = "";
         public int Age { get; set; }
@@ -93,8 +105,31 @@ namespace MongoDB
         public Company Company { get; set; }
         public List<string> Languages { get; set; } = new List<string>();
     }
+    */
+
+    class PersonAtributes
+    {
+        //Класс PersonAttributes
+        [BsonId]//Атрибут ID
+        public int PersonId { get; set; }
+        public string Name { get; set; } = "";
+        [BsonIgnore]//Исключение свойств
+        public string Language { get; set; } = "";
+        [BsonElement("Login")]//Изменение названия
+        public string Email { get; set; } = "";
+        [BsonIgnoreIfDefault]//Игнорировать значения по умолчанию
+        public int Age { get; set; }
+        [BsonRepresentation(BsonType.String)]//Изменение представления свойства
+        public int YearsInTheCompany { get; set; }
+        [BsonIgnoreIfNull]//Игнорировать null
+        public Company Company { get; set; }
+    }
+
+
     class Company
     {
-        public string Name { get; set; }
+        public string Name { get; set; }//Привязан к классам Person и Person Attributes
     }
+
+
 }
