@@ -4,6 +4,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using MongoDB.Bson;
+using MongoDB.Bson.Serialization;
+using MongoDB.Bson.Serialization.Attributes;
 using MongoDB.Driver;
 
 namespace MongoDB
@@ -13,32 +15,42 @@ namespace MongoDB
         static void Main(string[] args)
         {
             var program = new Program();
-            program.DB();
+            program.CreateCollections();
+            program.CreateDocument();
+
+
             Console.ReadKey();
         }
-        async void DB()
+        async void CreateCollections()
         {
 
-            MongoClient client = new MongoClient("mongodb://localhost:27017");
-            var db = client.GetDatabase("test");
-            //await db.CreateCollectionAsync("people"); //создать коллекции people
+            MongoClient client = new MongoClient("mongodb://localhost:27017");//Создать бд
+            var db = client.GetDatabase("test");//Получить бд
+            //await db.CreateCollectionAsync("people"); //Создать коллекцию people
+
             //----------------------------------------------------------------------------------------------------------------------------------------
 
-            //await db.RenameCollectionAsync("people", "users"); //переименовать коллекцию из people в users
+            //await db.RenameCollectionAsync("people", "users"); //Переименовать коллекцию из people в users
+
             //----------------------------------------------------------------------------------------------------------------------------------------
 
-            //await db.DropCollectionAsync("users");  //удалить коллекцию users
+            //await db.DropCollectionAsync("users");  //Удалить коллекцию users
+
             //----------------------------------------------------------------------------------------------------------------------------------------
 
             /*
             var collections = await db.ListCollectionsAsync();
             foreach (var collection in collections.ToList())
             {
-                Console.WriteLine(collection); //Получение и вывод в консоль списка коллекций 
+                Console.WriteLine(collection); //Получить и выести в консоль список коллекций 
             }
             */
-            //----------------------------------------------------------------------------------------------------------------------------------------
+        }
+        void CreateDocument()
+        {
 
+            MongoClient client = new MongoClient("mongodb://localhost:27017");//Создать бд
+            var db = client.GetDatabase("test");//Получить бд
             /*
             BsonDocument doc = new BsonDocument
             {
@@ -47,7 +59,7 @@ namespace MongoDB
                 {"age", 38},
 
                 {"company", new BsonDocument{
-                    {"initial", new BsonDocument{ //Создание документа  и его последующий вывод
+                    {"initial", new BsonDocument{ //Создать документ  и в последствии вывести его
                         {"name", "Microsoft"}
                     }}
                 }},
@@ -56,15 +68,28 @@ namespace MongoDB
             Console.WriteLine(doc["company"]["initial"]["name"]);
             */
             //----------------------------------------------------------------------------------------------------------------------------------------
-
-
+            /*
+            var doc = new BsonDocument
+            {
+                {"PersonId",1 },
+                {"Name","Tom"},
+                {"Age", 38},
+                {"Email", "tom@somemail.com"},
+                {"Company", new BsonDocument{ {"Name" , "Microsoft"}} },
+                {"Languages", new BsonArray{"english", "german", "spanish"} }
+            };
+            Person person = BsonSerializer.Deserialize<Person>(doc);//Создать документ как объект Person
+            Console.WriteLine(person.ToJson());
+            */
         }
     }
+
     class Person
     {
-        public ObjectId Id { get; set; }
-        public string Name { get; set; }
+        public int PersonId { get; set; }
+        public string Name { get; set; } = "";
         public int Age { get; set; }
+        public string Email { get; set; } = "";
         public Company Company { get; set; }
         public List<string> Languages { get; set; } = new List<string>();
     }
